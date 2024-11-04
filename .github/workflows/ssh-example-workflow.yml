@@ -8,11 +8,11 @@ jobs:
 
     steps:
       - name: ls -a via OPEN SSH Private Key
-        uses: garygrossgarten/github-action-ssh@release
+        uses: richard-burhans/github-action-ssh@release
         with:
           command: ls -a
           host: ${{ secrets.HOST }}
-          username: garygrossgarten
+          username: richard-burhans
           password: ${{ secrets.PASSPHRASE }}
           privateKey: ${{ secrets.PRIVATE_KEY}}
         env:

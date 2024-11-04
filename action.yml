@@ -1,5 +1,5 @@
 name: Run SSH command
-author: garygrossgarten
+author: richard-burhans
 description: Github Action to run commands on a remote server using SSH
 inputs:
   command:
