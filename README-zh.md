@@ -8,11 +8,11 @@
 **使用 OpenSSH 加密私钥的示例**
 
 - name: ls -a 通过 ssh
-  uses: garygrossgarten/github-action-ssh@release
+  uses: richard-burhans/github-action-ssh@release
   with:
     command: ls -a
     host: ${{ secrets.HOST }}
-    username: garygrossgarten
+    username: richard-burhans
     passphrase: ${{ secrets.PASSPHRASE }}
     privateKey: ${{ secrets.PRIVATE_KEY}}
 

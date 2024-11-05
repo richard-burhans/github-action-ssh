@@ -26,7 +26,11 @@ async function run() {
 
     ssh.dispose();
   } catch (err) {
-    core.setFailed(err);
+    if (typeof err === 'string') {
+      core.setFailed(err);
+    } else if (err instanceof Error) {
+      core.setFailed(err.message);
+    }
   }
 }
 
@@ -50,7 +54,9 @@ async function connect(
       password: password,
       passphrase: passphrase,
       tryKeyboard: tryKeyboard,
-      onKeyboardInteractive: tryKeyboard ? keyboardFunction(password) : null
+      onKeyboardInteractive: tryKeyboard
+        ? keyboardFunction(password)
+        : undefined
     };
     if (privateKey) {
       console.log('using provided private key');
@@ -59,10 +65,17 @@ async function connect(
     await ssh.connect(config);
     console.log(`🤝 Connected to ${host}.`);
   } catch (err) {
-    console.error(`⚠️ The GitHub Action couldn't connect to ${host}.`, err);
-    core.setFailed(err.message);
+    if (typeof err === 'string') {
+      console.error(`⚠️ The GitHub Action couldn't connect to ${host}.`, err);
+      core.setFailed(err);
+    } else if (err instanceof Error) {
+      console.error(
+        `⚠️ The GitHub Action couldn't connect to ${host}.`,
+        err.message
+      );
+      core.setFailed(err.message);
+    }
   }
-
   return ssh;
 }
 
@@ -80,26 +93,34 @@ async function executeCommand(ssh: NodeSSH, command: string) {
       }
     });
 
-    if (code > 0) {
+    if (typeof code === 'number' && code > 0) {
       throw Error(`Command exited with code ${code}`);
     }
     console.log('✅ SSH Action finished.');
     if (ssh.isConnected()) {
-      ssh.dispose()
+      ssh.dispose();
     }
   } catch (err) {
-    console.error(
-      `⚠️ An error happened executing command ${command}.`,
-      err?.message ?? err
-    );
-    core.setFailed(err.message);
+    if (typeof err === 'string') {
+      console.error(`⚠️ An error happened executing command ${command}.`, err);
+      core.setFailed(err);
+    } else if (err instanceof Error) {
+      console.error(
+        `⚠️ An error happened executing command ${command}.`,
+        err.message
+      );
+      core.setFailed(err.message);
+    }
     process.abort();
   }
 }
 
-process.on('uncaughtException', (err) => {
-  if (err['code'] !== 'ECONNRESET')
-    throw err
-})
+process.on('uncaughtException', (err: NodeJS.ErrnoException) => {
+  if (err instanceof Error) {
+    if (err.code !== 'ECONNRESET') {
+      throw err;
+    }
+  }
+});
 
 run();
