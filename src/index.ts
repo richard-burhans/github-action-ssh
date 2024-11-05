@@ -115,7 +115,7 @@ async function executeCommand(ssh: NodeSSH, command: string) {
   }
 }
 
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err: NodeJS.ErrnoException) => {
   if (err instanceof Error) {
     if (err.code !== 'ECONNRESET') {
       throw err;

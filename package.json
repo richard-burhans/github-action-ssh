@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/richard-burhans/github-action-ssh"
   },
-  "main": "lib/index.json",
+  "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
